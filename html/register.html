@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Đăng ký - CodeMate</title>
+  <link rel="stylesheet" href="../css/register.css">
+</head>
+<body>
+  <div class="login-container">
+    <h2>Đăng ký</h2>
+    <form id="registerForm" autocomplete="off">
+      <label for="username">Tên đăng nhập</label>
+      <input type="text" id="username" name="username" required autofocus />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="password">Mật khẩu</label>
+      <input type="password" id="password" name="password" required />
+
+      <label for="confirmPassword">Xác nhận mật khẩu</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" required />
+
+      <button type="submit">Đăng ký</button>
+    </form>
+
+    <p class="redirect">
+      Đã có tài khoản? 
+      <a href="./login.html">Đăng nhập ngay</a>
+    </p>
+  </div>
+
+  <a href="../index.html" class="return-home">
+    ← Quay về Trang chủ
+  </a>
+
+  <script src="../js/register.js"></script>
+</body>
+</html>

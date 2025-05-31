@@ -1,0 +1,58 @@
+/* style.css */
+
+/* Body chung */
+body {
+    background-color: #f9fdf8;
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #2d3a2e;
+  }
+  
+  /* Tiêu đề chính */
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+  }
+  
+  /* Card ngôn ngữ lập trình */
+  .language-card {
+    border: 1px solid #c8e6c9;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: white;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .language-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgb(0 0 0 / 0.15);
+  }
+  
+  .language-card h3 {
+    margin-bottom: 15px;
+    color: #2e7d32;
+  }
+  
+  /* Button học ngay */
+  .btn-learn {
+    background-color: #388e3c;
+    color: white;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    align-self: flex-start;
+  }
+  
+  .btn-learn:hover {
+    background-color: #2e7d32;
+    color: white;
+  }
+  
+  /* Responsive fix cho card container */
+  #languages {
+    min-height: 200px;
+  }
+  
