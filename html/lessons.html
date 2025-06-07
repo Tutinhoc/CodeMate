@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lộ Trình Học Tập Ngôn Ngữ Lập Trình Chuyên Nghiệp</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #ece9e6, #ffffff); /* Nền gradient nhẹ nhàng */
+      padding: 20px;
+      color: #333;
+      line-height: 1.6;
+    }
+    #container {
+      max-width: 800px; /* Tăng chiều rộng tối đa */
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Đổ bóng mềm mại hơn */
+      border: 1px solid #e0e0e0;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2c3e50;
+      font-size: 2.2em;
+    }
+    p strong {
+      color: #2980b9; /* Màu xanh đậm cho chữ "Điểm bài test" */
+    }
+    label {
+      display: block;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #34495e;
+    }
+    select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 17px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box; /* Đảm bảo padding không làm tăng chiều rộng */
+    }
+    select {
+      background-color: #f8f8f8;
+      cursor: pointer;
+    }
+    button {
+      background-color: #28a745; /* Màu xanh lá cây nổi bật */
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng chuyển động */
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+    button:hover {
+      background-color: #218838; /* Màu xanh đậm hơn khi hover */
+      transform: translateY(-2px); /* Hiệu ứng nhấc nhẹ */
+    }
+    button:active {
+      transform: translateY(0); /* Trở lại vị trí ban đầu khi click */
+    }
+    #result {
+      white-space: pre-wrap; /* Giữ nguyên định dạng văn bản */
+      word-wrap: break-word; /* Ngắt từ nếu quá dài */
+      background: #fdfdfd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+      max-height: 600px; /* Tăng chiều cao tối đa */
+      overflow-y: auto; /* Cuộn khi nội dung tràn */
+      border: 1px solid #eee;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Đổ bóng inset nhẹ */
+      font-size: 0.95em;
+      color: #444;
+    }
+    #result h2 {
+      text-align: center;
+      color: #1a5276;
+      margin-bottom: 25px;
+      font-size: 1.8em;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .lesson-container {
+      margin-bottom: 25px;
+      padding: 18px;
+      border: 1px solid #dcdcdc;
+      border-left: 5px solid #28a745; /* Đường viền bên trái nổi bật */
+      border-radius: 8px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      cursor: pointer; /* Biểu tượng con trỏ để người dùng biết có thể nhấp */
+    }
+    .lesson-container:hover {
+      transform: translateY(-3px); /* Hiệu ứng nhấc nhẹ khi hover */
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .lesson-container h3 {
+      color: #007bff; /* Màu xanh dương cho tiêu đề bài học */
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+      border-bottom: 1px dashed #e9ecef;
+      padding-bottom: 8px;
+    }
+    .lesson-container p {
+      text-align: justify;
+      color: #555;
+    }
+    .loading-spinner {
+      display: none; /* Mặc định ẩn */
+      text-align: center;
+      margin-top: 20px;
+      color: #555;
+    }
+    .loading-spinner::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 40px;
+      margin: 10px auto;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* --- Styles cho Modal (Hộp thoại) --- */
+    .modal {
+      display: none; /* Ẩn theo mặc định */
+      position: fixed; /* Giữ nguyên vị trí khi cuộn */
+      z-index: 1000; /* Luôn hiển thị trên cùng */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto; /* Cho phép cuộn nếu nội dung dài */
+      background-color: rgba(0,0,0,0.6); /* Nền mờ */
+      backdrop-filter: blur(5px); /* Hiệu ứng làm mờ nền phía sau */
+      -webkit-backdrop-filter: blur(5px); /* Hỗ trợ Safari */
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto; /* 5% từ trên xuống và căn giữa */
+      padding: 30px;
+      border: 1px solid #888;
+      width: 90%; /* Chiều rộng tương đối */
+      max-width: 800px; /* Tăng chiều rộng tối đa cho modal */
+      border-radius: 10px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3); /* Đổ bóng mạnh hơn */
+      position: relative; /* Để vị trí nút đóng */
+      animation: fadeIn 0.3s ease-out; /* Hiệu ứng mở modal */
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .close-button {
+      color: #aaa;
+      position: absolute;
+      top: 15px;
+      right: 25px;
+      font-size: 35px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .close-button:hover,
+    .close-button:focus {
+      color: #333;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    #modalTitle {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    #modalContent {
+      font-size: 1.1em;
+      color: #444;
+      text-align: justify;
+      max-height: 70vh; /* Giới hạn chiều cao và cho phép cuộn */
+      overflow-y: auto;
+      padding-right: 10px; /* Đảm bảo không bị che bởi thanh cuộn */
+      white-space: pre-wrap; /* Giữ nguyên các ngắt dòng và khoảng trắng */
+      word-wrap: break-word; /* Ngắt từ nếu quá dài */
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        #container {
+            padding: 20px;
+            margin: 20px auto;
+        }
+        h1 {
+            font-size: 1.8em;
+        }
+        .modal-content {
+            width: 95%;
+            margin: 10% auto;
+            padding: 20px;
+        }
+    }
+    @media (max-width: 480px) {
+        body {
+            padding: 10px;
+        }
+        #container {
+            padding: 15px;
+            margin: 15px auto;
+        }
+        h1 {
+            font-size: 1.5em;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .modal-content {
+            margin: 5% auto;
+            padding: 15px;
+        }
+        .close-button {
+            font-size: 30px;
+            top: 10px;
+            right: 15px;
+        }
+        #modalTitle {
+            font-size: 1.5em;
+        }
+        #modalContent {
+            font-size: 1em;
+        }
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>Tạo Lộ Trình Học Tập Cá Nhân</h1>
+
+    <p><strong>Điểm bài test đầu vào của bạn:</strong> <span id="scoreDisplay">Đang tải...</span></p>
+    <div class="input-group">
+      <label for="lang">Chọn ngôn ngữ lập trình bạn muốn học:</label>
+      <select id="lang">
+        <option value="Python">Python</option>
+        <option value="C++">C++</option>
+        <option value="JavaScript">JavaScript</option>
+        <option value="Java">Java</option>
+        <option value="Go">Go</option>
+      </select>
+    </div>
+
+    <button onclick="generatePrompt()">Tạo Lộ Trình Học Tập</button>
+
+    <div class="loading-spinner" id="loadingSpinner">
+      Đang tạo lộ trình...
+    </div>
+
+    <div id="result">
+      <p style="text-align: center; color: #777;">Lộ trình học tập sẽ hiển thị ở đây sau khi bạn chọn ngôn ngữ và nhấp vào nút "Tạo Lộ Trình".</p>
+    </div>
+  </div>
+
+  <div id="lessonModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // Giả lập điểm bài test. Trong thực tế, điểm này có thể được lấy từ một bài kiểm tra thực tế.
+    localStorage.setItem('quizScore', 2);
+
+    // Hiển thị điểm lúc đầu tải trang
+    const initialScore = localStorage.getItem('quizScore');
+    document.getElementById('scoreDisplay').textContent = initialScore ? initialScore : 'Chưa có điểm';
+
+    async function generatePrompt() {
+      const score = localStorage.getItem('quizScore');
+      if (!score) {
+        alert("Không tìm thấy điểm bài test trong localStorage. Vui lòng đảm bảo bạn đã làm bài kiểm tra.");
+        return;
+      }
+
+      const lang = document.getElementById('lang').value;
+      const resultDiv = document.getElementById('result');
+      const loadingSpinner = document.getElementById('loadingSpinner');
+
+      resultDiv.innerHTML = '';
+      loadingSpinner.style.display = 'block';
+
+      // *** PHẦN NÀY ĐÃ ĐƯỢC CHỈNH SỬA ĐỂ YÊU CẦU NỘI DUNG CHI TIẾT HƠN ***
+      const prompt = `Từ kết quả bài test đầu vào là ${score} điểm, bạn hãy tạo ra cho tôi một lộ trình học ngôn ngữ lập trình ${lang}. Lộ trình này phải dạy cực kỳ **kỹ lưỡng và chi tiết** từng nội dung, kiến thức của mỗi bài học. Mỗi bài học cần **giải thích cặn kẽ các định nghĩa, quy tắc, cú pháp, ví dụ minh họa và trường hợp sử dụng thực tế**. Đặc biệt, hãy đi sâu vào các khái niệm cốt lõi như cấu trúc dữ liệu, thuật toán, lập trình hướng đối tượng, xử lý ngoại lệ, và làm việc với file, mạng. Đừng đưa ra những bài học tôi đã biết được thông qua bài test (giả định ${score} điểm thể hiện kiến thức cơ bản của tôi).
+Kết quả trả về phải là 1 lộ trình học tập ngôn ngữ lập trình ${lang} dạng JSON thuần túy, không có bất kỳ ký tự nào khác ngoài JSON. Cấu trúc JSON như sau:
+{
+  "point": "${score}",
+  "lang": "${lang}",
+  "lotrinh": [
+    ["Bài 1: Tên nội dung chi tiết", "Ghi CỰC KỲ CHI TIẾT và ĐẦY ĐỦ về nội dung đó. Hãy chia nhỏ các định nghĩa, quy tắc, cú pháp, đưa ra ví dụ code minh họa, và giải thích rõ ràng từng phần. Đảm bảo nội dung bài học ĐỦ DÀI và ĐẦY ĐỦ kiến thức cần thiết để người học hiểu sâu. Mỗi bài học phải có độ dài tối thiểu 5-7 đoạn văn hoặc tương đương 300-500 từ. Tổng số bài học phải trên 20 bài."],
+    // ... (Thêm các bài học tiếp theo, mỗi bài đều cực kỳ chi tiết)
+  ]
+}
+Hãy đảm bảo rằng phản hồi chỉ bao gồm duy nhất khối JSON, không có bất kỳ văn bản, dấu backtick, hoặc giải thích nào khác bên ngoài JSON.`;
+
+      const encodedPrompt = encodeURIComponent(prompt);
+      const url = `https://code.techmax.site/system/getai.php?prombt=${encodedPrompt}`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error(`Lỗi HTTP: ${res.status}. Vui lòng kiểm tra API.`);
+        }
+        const rawData = await res.text(); // Lấy dữ liệu thô dạng chuỗi
+
+        // Ẩn spinner
+        loadingSpinner.style.display = 'none';
+
+        try {
+          // *** ĐOẠN MÃ XỬ LÝ LỖI: LÀM SẠCH CHUỖI JSON TỪ PHẢN HỒI ***
+          let cleanedData = rawData.trim();
+          if (cleanedData.startsWith('```json')) {
+            cleanedData = cleanedData.substring(7);
+          }
+          if (cleanedData.endsWith('```')) {
+            cleanedData = cleanedData.substring(0, cleanedData.length - 3);
+          }
+          cleanedData = cleanedData.trim();
+
+          const roadmapData = JSON.parse(cleanedData); // Thử phân tích JSON đã làm sạch
+
+          if (roadmapData && roadmapData.lotrinh && Array.isArray(roadmapData.lotrinh) && roadmapData.lotrinh.length > 0) {
+            const langName = roadmapData.lang || 'Ngôn ngữ lập trình';
+            const scoreValue = roadmapData.point || 'Không xác định';
+
+            const heading = document.createElement('h2');
+            heading.textContent = `Lộ Trình Học Tập ${langName} của bạn (Điểm bài test: ${scoreValue})`;
+            resultDiv.appendChild(heading);
+
+            roadmapData.lotrinh.forEach((lesson, index) => {
+              const lessonContainer = document.createElement('div');
+              lessonContainer.className = 'lesson-container';
+              // Thêm sự kiện click để mở modal, truyền cả tiêu đề và nội dung đầy đủ
+              lessonContainer.onclick = () => openLessonModal(lesson[0], lesson[1]);
+
+              const lessonTitle = document.createElement('h3');
+              lessonTitle.textContent = lesson[0];
+
+              const lessonContentPreview = document.createElement('p');
+              // Hiển thị một phần nội dung để làm xem trước, không cắt quá ngắn nếu nội dung đã ngắn
+              const previewLength = 200; // Tăng số ký tự xem trước
+              let previewText = lesson[1];
+              if (lesson[1].length > previewLength) {
+                // Cắt ở cuối từ gần nhất để tránh cắt cụt giữa chừng
+                const lastSpaceIndex = lesson[1].lastIndexOf(' ', previewLength);
+                previewText = lesson[1].substring(0, lastSpaceIndex !== -1 ? lastSpaceIndex : previewLength) + '...';
+              }
+              lessonContentPreview.textContent = previewText;
+
+              lessonContainer.appendChild(lessonTitle);
+              lessonContainer.appendChild(lessonContentPreview); // Hiển thị bản xem trước
+              resultDiv.appendChild(lessonContainer);
+            });
+          } else {
+            resultDiv.innerHTML = '<p style="text-align: center; color: #e74c3c; font-weight: bold;">Không có lộ trình học tập nào được tạo hoặc dữ liệu không hợp lệ. Vui lòng thử lại.</p>';
+          }
+        } catch (parseError) {
+          resultDiv.innerHTML = `<p style="text-align: center; color: #e74c3c; font-weight: bold;">Đã xảy ra lỗi khi phân tích dữ liệu nhận được từ máy chủ. Định dạng JSON có thể không đúng. Lỗi: ${parseError.message}</p>
+                                 <p style="color: #666; font-size: 0.9em;">Dữ liệu thô nhận được (để debug): <pre style="background: #f8d7da; padding: 10px; border-radius: 5px; overflow-x: auto;">${escapeHtml(rawData)}</pre></p>`;
+          console.error("Lỗi phân tích cú pháp JSON:", parseError);
+          console.log("Dữ liệu thô nhận được:", rawData); // In ra dữ liệu thô để debug
+        }
+
+      } catch (err) {
+        loadingSpinner.style.display = 'none';
+        resultDiv.innerHTML = `<p style="text-align: center; color: #e74c3c; font-weight: bold;">Đã xảy ra lỗi khi kết nối với máy chủ: ${err.message}. Vui lòng kiểm tra kết nối mạng hoặc liên hệ quản trị viên.</p>`;
+        console.error("Lỗi Fetch API:", err);
+      }
+    }
+
+    // Hàm tiện ích để hiển thị HTML an toàn trong <pre>
+    function escapeHtml(text) {
+      return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+    }
+
+    // --- Chức năng Modal (Hộp thoại) ---
+    const lessonModal = document.getElementById('lessonModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalContent = document.getElementById('modalContent');
+
+    function openLessonModal(title, content) {
+      modalTitle.textContent = title;
+      // *** ĐẢM BẢO NỘI DUNG ĐƯỢC HIỂN THỊ ĐÚNG ĐỊNH DẠNG ***
+      // Nếu nội dung có thể chứa HTML (ví dụ: các thẻ <strong>, <em>, <pre> cho code),
+      // thì dùng innerHTML. Cần cẩn thận với bảo mật (XSS).
+      // Nếu chắc chắn nội dung chỉ là văn bản thuần túy, dùng textContent là an toàn nhất.
+      // Vì bạn muốn nội dung "kỹ lưỡng và chi tiết", có thể nó sẽ bao gồm các ví dụ code,
+      // nên chúng ta sẽ tạm sử dụng innerHTML cho mục đích hiển thị định dạng từ AI.
+      // Cần lưu ý về XSS (Cross-Site Scripting) nếu nội dung từ AI không được kiểm soát chặt.
+      modalContent.innerHTML = content.replace(/\n/g, '<br>'); // Thay thế ngắt dòng bằng <br> để hiển thị đúng
+      // Có thể thêm bước xử lý Markdown nếu AI trả về Markdown
+      // Ví dụ: modalContent.innerHTML = marked.parse(content); (cần thư viện marked.js)
+
+      lessonModal.style.display = 'block'; // Hiển thị modal
+      document.body.style.overflow = 'hidden'; // Ngăn cuộn trang chính
+    }
+
+    function closeModal() {
+      lessonModal.style.display = 'none'; // Ẩn modal
+      document.body.style.overflow = ''; // Cho phép cuộn trang chính trở lại
+    }
+
+    // Đóng modal khi click ra ngoài nội dung modal
+    window.onclick = function(event) {
+      if (event.target == lessonModal) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+</html>

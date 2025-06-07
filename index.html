@@ -14,6 +14,12 @@
 
 
   </style>
+  <script>
+      function logout() {
+  localStorage.removeItem("loggedInUser");
+  location.reload();
+ }
+  </script>
 </head>
 <body>
 
@@ -29,9 +35,8 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Trang chủ</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Bảng điều khiển</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Bài học</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Trợ giảng AI</a></li>
+          <li class="nav-item"><a class="nav-link" href="./html/lessons.html">Bài học</a></li>
+          <li class="nav-item"><a class="nav-link" href="./html/code.html">Code</a></li>
           <li class="nav-item"><a class="nav-link" href="#">Hồ sơ cá nhân</a></li>
         </ul>
         <ul class="navbar-nav ms-auto">
@@ -42,7 +47,7 @@
             <a class="nav-link" href="./html/login.html" id="loginBtn">Đăng nhập</a>
           </li>
           <li class="nav-item" id="nav-logout" style="display:none;">
-            <a class="nav-link" href="#" id="logoutBtn">Đăng xuất</a>
+            <a class="nav-link" type="button" onclick="logout()">Đăng xuất</a>
           </li>
         </ul>
       </div>
@@ -63,5 +68,30 @@
   <!-- Custom JS -->
   <script src="./js/script.js"></script>
   <script src="./js/navbar.js"></script>
+  <script>
+window.addEventListener("DOMContentLoaded", function () {
+  let userJson = localStorage.getItem("loggedInUser");
+  let username = null;
+
+  if (userJson) {
+    const user = JSON.parse(userJson);
+    username = user.username;
+    console.log("Username:", username);
+  }
+
+
+  if (username) {
+    document.getElementById("username").innerText = username;
+    document.getElementById("nav-username").style.display = "block";
+    document.getElementById("nav-login").style.display = "none";
+    document.getElementById("nav-logout").style.display = "block";
+  } else {
+    document.getElementById("nav-username").style.display = "none";
+    document.getElementById("nav-login").style.display = "block";
+    document.getElementById("nav-logout").style.display = "none";
+  }
+});
+
+  </script>
 </body>
 </html>

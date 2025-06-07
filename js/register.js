@@ -16,10 +16,22 @@ document.getElementById("registerForm").addEventListener("submit", function (e) 
       return;
     }
   
-    // Giả lập đăng ký thành công (ở đây bạn có thể thêm xử lý gửi dữ liệu lên server)
-    alert("Đăng ký thành công! Bạn sẽ được chuyển đến trang đăng nhập.");
+    // Lấy danh sách người dùng đã đăng ký
+    const users = JSON.parse(localStorage.getItem("users")) || [];
   
-    // Chuyển sang trang đăng nhập
+    // Kiểm tra tài khoản đã tồn tại chưa
+    const existingUser = users.find(user => user.username === username || user.email === email);
+  
+    if (existingUser) {
+      alert("Tên đăng nhập hoặc email đã được sử dụng!");
+      return;
+    }
+  
+    // Thêm người dùng mới
+    users.push({ username, email, password });
+    localStorage.setItem("users", JSON.stringify(users));
+  
+    alert("Đăng ký thành công! Bạn sẽ được chuyển đến trang đăng nhập.");
     window.location.href = "login.html";
   });
   

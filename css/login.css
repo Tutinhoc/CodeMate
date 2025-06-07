@@ -1,21 +1,21 @@
-/* login.css */
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #556b2f, #a8d5a3);
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     color: #fff;
   }
   
   .login-container {
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     padding: 2.5rem 3rem;
     border-radius: 8px;
     width: 320px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.6);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
     text-align: center;
   }
   
@@ -76,5 +76,24 @@ body {
   
   .redirect a:hover {
     color: #e9f7ef;
+  }
+  
+  /* ✅ Căn giữa nút quay về trang chủ */
+  .home-link-wrapper {
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+  
+  .return-home {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.05rem;
+    transition: color 0.3s ease;
+  }
+  
+  .return-home:hover {
+    text-decoration: underline;
+    color: #f0fff0;
   }
   

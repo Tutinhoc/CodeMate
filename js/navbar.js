@@ -23,17 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   
-    // Bỏ đoạn xử lý đăng nhập giả lập ở đây, để cho link chuyển trang login.html mặc định
-    // loginBtn.addEventListener("click", (e) => {
-    //   e.preventDefault();
-    //   const name = prompt("Nhập tên người dùng:");
-    //   if (name && name.trim() !== "") {
-    //     localStorage.setItem("isLoggedIn", "true");
-    //     localStorage.setItem("username", name.trim());
-    //     location.reload();
-    //   }
-    // });
-  
+
     // Xử lý đăng xuất
     logoutBtn.addEventListener("click", (e) => {
       e.preventDefault();

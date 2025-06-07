@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Lập Trình với GenAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Playfair+Display&family=Poppins&family=Roboto&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Roboto', sans-serif;
+      background: #1E2A38;
+      color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Playfair Display', 'Poppins', serif;
+      margin-bottom: 12px;
+      color: #00C2FF;
+      text-align: center;
+    }
+
+    button {
+      background: #00C2FF;
+      border: none;
+      color: #1E2A38;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,194,255,0.4);
+      margin: 10px auto;
+      display: block;
+      min-width: 180px;
+      user-select: none;
+    }
+    button:hover:not(:disabled) {
+      background: #00A6E6;
+      box-shadow: 0 6px 15px rgba(0,166,230,0.6);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    #question-container {
+      max-width: 720px;
+      width: 100%;
+      margin: 20px auto;
+      background: #273746;
+      border-radius: 12px;
+      padding: 25px 30px;
+      box-shadow: 0 0 20px rgba(0,194,255,0.3);
+    }
+
+    .question {
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #00C2FF55;
+    }
+
+    .question:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .question p {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #00C2FF;
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-family: 'Roboto', sans-serif;
+      font-size: 1rem;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      background: #1E2A38;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+      user-select: none;
+      border: 2px solid transparent;
+    }
+    label:hover {
+      background: #00C2FF22;
+      border-color: #00C2FF;
+    }
+
+    input[type="radio"] {
+      margin-right: 12px;
+      accent-color: #00C2FF;
+      cursor: pointer;
+    }
+
+    #result {
+      max-width: 720px;
+      white-space: pre-wrap;
+      background: #004466;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      color: #E0FFFF;
+      margin-top: 30px;
+      box-shadow: 0 0 15px #00C2FF88;
+    }
+
+    #illustration {
+      margin-top: 40px;
+      width: 160px;
+      height: 160px;
+      background: url('https://cdn-icons-png.flaticon.com/512/4712/4712840.png') no-repeat center center / contain;
+      filter: drop-shadow(0 0 8px #00C2FF99);
+      user-select: none;
+    }
+
+    @media (max-width: 768px) {
+      #question-container {
+        padding: 20px 15px;
+      }
+      button {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Quiz Lập Trình với GenAI</h1>
+  <h2>Kiểm tra kiến thức cơ bản</h2>
+
+  <button onclick="generateQuestions()" id="generateBtn">Tạo câu hỏi mới</button>
+  <div id="question-container"></div>
+  <button id="submitBtn" style="display:none;" onclick="submitAnswers()" disabled>Nộp bài</button>
+
+  <h3>Kết quả:</h3>
+  <div id="result"></div>
+
+  <div id="illustration" title="Trợ lý AI"></div>
+  <button id="gotoLessonBtn" style="display:none;" onclick="goToLessons()">Đi tới bài học</button>
+
+  <script>
+    let currentQuestions = [];
+    let ngonNgus = localStorage.getItem("selectedLanguage") || " JavaScript ";
+
+    async function generateQuestions() {
+      const prompt = "Tạo 5 câu hỏi trắc nghiệm về kiểm tra kiến thức về lập trình " + ngonNgus + " để tạo lộ trình học phù hợp và 4 đáp án A, B, C, D, và ghi rõ đáp án đúng.";
+      const url = `https://code.techmax.site/system/getai.php?prombt=${encodeURIComponent(prompt)}`;
+
+      document.getElementById("generateBtn").disabled = true;
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("result").innerText = "";
+      document.getElementById("question-container").innerHTML = "";
+
+      try {
+        const response = await fetch(url, { method: 'GET', mode: 'cors' });
+        if (!response.ok) throw new Error(`HTTP lỗi: ${response.status}`);
+        const text = await response.text();
+        currentQuestions = parseQuestions(text);
+        renderQuestions(currentQuestions);
+        document.getElementById("submitBtn").style.display = "block";
+        document.getElementById("submitBtn").disabled = false;
+      } catch (err) {
+        alert("Lỗi khi tạo câu hỏi: " + err.message);
+      } finally {
+        document.getElementById("generateBtn").disabled = false;
+      }
+    }
+
+    function parseQuestions(text) {
+      const blocks = text.split(/Câu \d+:/).slice(1);
+      return blocks.map(block => {
+        const lines = block.trim().split("\n").filter(line => line.trim() !== "");
+        const question = lines[0].trim();
+        const choices = lines.slice(1, 5).map(line => line.slice(3).trim());
+        const answerLine = lines.find(line => line.includes("Đáp án"));
+        const answer = answerLine ? answerLine.split(":")[1].trim() : "";
+        return { question, choices, answer };
+      });
+    }
+
+    function renderQuestions(questions) {
+      const container = document.getElementById("question-container");
+      container.innerHTML = "";
+
+      questions.forEach((q, idx) => {
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML = `<p><strong>Câu ${idx + 1}:</strong> ${q.question}</p>` +
+          q.choices.map((c, i) =>
+            `<label><input type="radio" name="q${idx}" value="${String.fromCharCode(65 + i)}"> ${c}</label>`
+          ).join("");
+        container.appendChild(div);
+      });
+    }
+
+    function extractLearningPath(text) {
+      const match = text.match(/(?:Lộ trình|Hãy bắt đầu|Bạn nên bắt đầu|Bạn có thể bắt đầu).+/is);
+      return match ? match[0].trim() : "";
+    }
+
+    async function submitAnswers() {
+      let content = currentQuestions.map((q, i) => {
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
+        return `Câu ${i + 1}: ${q.question}\nNgười học chọn: ${sel ? sel.value : "Không chọn"}\nĐáp án đúng: ${q.answer}\n`;
+      }).join("\n");
+
+      const prompt = `Dưới đây là các câu hỏi lập trình và câu trả lời của học viên. Hãy chấm điểm và đưa nhận xét:\n\n${content}\nSau đó đưa ra lộ trình học phù hợp, nói như đang nói chuyện với học viên, không nói chuyện với nhà phát triển.`;
+      const url = `https://code.techmax.site/system/getai.php?prombt=${encodeURIComponent(prompt)}`;
+
+      document.getElementById("submitBtn").disabled = true;
+      document.getElementById("result").innerText = "Đang chấm điểm...";
+
+      try {
+        const res = await fetch(url, { method: 'GET', mode: 'cors' });
+        if (!res.ok) throw new Error(`HTTP lỗi: ${res.status}`);
+        const result = await res.text();
+        document.getElementById("result").innerText = result;
+
+        const path = extractLearningPath(result);
+        if (path && path.length > 30) {
+          document.getElementById("gotoLessonBtn").style.display = "block";
+        }
+      } catch (err) {
+        document.getElementById("result").innerText = "Lỗi khi chấm điểm: " + err.message;
+      } finally {
+        document.getElementById("submitBtn").disabled = false;
+      }
+    }
+
+    function goToLessons() {
+      alert("Tính năng chuyển sang bài học sẽ được triển khai sau!");
+    }
+  </script>
+</body>
+</html>
