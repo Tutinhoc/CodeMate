@@ -260,16 +260,7 @@
     <h1>Tạo Lộ Trình Học Tập Cá Nhân</h1>
 
     <p><strong>Điểm bài test đầu vào của bạn:</strong> <span id="scoreDisplay">Đang tải...</span></p>
-    <div class="input-group">
-      <label for="lang">Chọn ngôn ngữ lập trình bạn muốn học:</label>
-      <select id="lang">
-        <option value="Python">Python</option>
-        <option value="C++">C++</option>
-        <option value="JavaScript">JavaScript</option>
-        <option value="Java">Java</option>
-        <option value="Go">Go</option>
-      </select>
-    </div>
+
 
     <button onclick="generatePrompt()">Tạo Lộ Trình Học Tập</button>
 
@@ -291,29 +282,34 @@
   </div>
 
   <script>
-    // Giả lập điểm bài test. Trong thực tế, điểm này có thể được lấy từ một bài kiểm tra thực tế.
-    localStorage.setItem('quizScore', 2);
-
-    // Hiển thị điểm lúc đầu tải trang
+// Hiển thị điểm lúc đầu tải trang
+document.addEventListener('DOMContentLoaded', () => {
     const initialScore = localStorage.getItem('quizScore');
-    document.getElementById('scoreDisplay').textContent = initialScore ? initialScore : 'Chưa có điểm';
+    document.getElementById('scoreDisplay').textContent = initialScore ? `${initialScore} điểm` : 'Chưa có điểm';
+});
 
-    async function generatePrompt() {
-      const score = localStorage.getItem('quizScore');
-      if (!score) {
-        alert("Không tìm thấy điểm bài test trong localStorage. Vui lòng đảm bảo bạn đã làm bài kiểm tra.");
+async function generatePrompt() {
+    const score = localStorage.getItem('quizScore');
+    if (!score) {
+        alert("Không tìm thấy điểm bài test trong localStorage. Vui lòng đảm bảo bạn đã làm bài kiểm tra trước.");
         return;
-      }
+    }
 
-      const lang = document.getElementById('lang').value;
-      const resultDiv = document.getElementById('result');
-      const loadingSpinner = document.getElementById('loadingSpinner');
+    const lang = localStorage.getItem("selectedLanguage"); // Lấy ngôn ngữ từ localStorage
+    if (!lang) {
+        alert("Không tìm thấy ngôn ngữ đã chọn. Vui lòng chọn ngôn ngữ trước.");
+        return;
+    }
 
-      resultDiv.innerHTML = '';
-      loadingSpinner.style.display = 'block';
+    const resultDiv = document.getElementById('result');
+    const loadingSpinner = document.getElementById('loadingSpinner');
 
-      // *** PHẦN NÀY ĐÃ ĐƯỢC CHỈNH SỬA ĐỂ YÊU CẦU NỘI DUNG CHI TIẾT HƠN ***
-      const prompt = `Từ kết quả bài test đầu vào là ${score} điểm, bạn hãy tạo ra cho tôi một lộ trình học ngôn ngữ lập trình ${lang}. Lộ trình này phải dạy cực kỳ **kỹ lưỡng và chi tiết** từng nội dung, kiến thức của mỗi bài học. Mỗi bài học cần **giải thích cặn kẽ các định nghĩa, quy tắc, cú pháp, ví dụ minh họa và trường hợp sử dụng thực tế**. Đặc biệt, hãy đi sâu vào các khái niệm cốt lõi như cấu trúc dữ liệu, thuật toán, lập trình hướng đối tượng, xử lý ngoại lệ, và làm việc với file, mạng. Đừng đưa ra những bài học tôi đã biết được thông qua bài test (giả định ${score} điểm thể hiện kiến thức cơ bản của tôi).
+    // Xóa nội dung cũ và hiển thị spinner
+    resultDiv.innerHTML = '';
+    loadingSpinner.style.display = 'block';
+
+    // Tạo prompt yêu cầu lộ trình học tập chi tiết
+    const prompt = `Từ kết quả bài test đầu vào là ${score} điểm, bạn hãy tạo ra cho tôi một lộ trình học ngôn ngữ lập trình ${lang}. Lộ trình này phải dạy cực kỳ **kỹ lưỡng và chi tiết** từng nội dung, kiến thức của mỗi bài học. Mỗi bài học cần **giải thích cặn kẽ các định nghĩa, quy tắc, cú pháp, ví dụ minh họa và trường hợp sử dụng thực tế**. Đặc biệt, hãy đi sâu vào các khái niệm cốt lõi như cấu trúc dữ liệu, thuật toán, lập trình hướng đối tượng, xử lý ngoại lệ, và làm việc với file, mạng. Đừng đưa ra những bài học tôi đã biết được thông qua bài test (giả định ${score} điểm thể hiện kiến thức cơ bản của tôi).
 Kết quả trả về phải là 1 lộ trình học tập ngôn ngữ lập trình ${lang} dạng JSON thuần túy, không có bất kỳ ký tự nào khác ngoài JSON. Cấu trúc JSON như sau:
 {
   "point": "${score}",
@@ -325,124 +321,228 @@ Kết quả trả về phải là 1 lộ trình học tập ngôn ngữ lập tr
 }
 Hãy đảm bảo rằng phản hồi chỉ bao gồm duy nhất khối JSON, không có bất kỳ văn bản, dấu backtick, hoặc giải thích nào khác bên ngoài JSON.`;
 
-      const encodedPrompt = encodeURIComponent(prompt);
-      const url = `https://code.techmax.site/system/getai.php?prombt=${encodedPrompt}`;
+    const encodedPrompt = encodeURIComponent(prompt);
+    const url = `https://code.techmax.site/system/getai.php?prombt=${encodedPrompt}`;
 
-      try {
+    let rawData = ''; // Khai báo biến để lưu dữ liệu thô
+    let cleanedData = ''; // Khai báo biến để lưu dữ liệu đã làm sạch
+
+    try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Lỗi HTTP: ${res.status}. Vui lòng kiểm tra API.`);
+            throw new Error(`Lỗi HTTP: ${res.status}. Vui lòng kiểm tra API hoặc kết nối mạng.`);
         }
-        const rawData = await res.text(); // Lấy dữ liệu thô dạng chuỗi
+        rawData = await res.text(); // Gán dữ liệu thô
 
-        // Ẩn spinner
+        // Ẩn spinner ngay khi nhận được dữ liệu
         loadingSpinner.style.display = 'none';
 
-        try {
-          // *** ĐOẠN MÃ XỬ LÝ LỖI: LÀM SẠCH CHUỖI JSON TỪ PHẢN HỒI ***
-          let cleanedData = rawData.trim();
-          if (cleanedData.startsWith('```json')) {
-            cleanedData = cleanedData.substring(7);
-          }
-          if (cleanedData.endsWith('```')) {
-            cleanedData = cleanedData.substring(0, cleanedData.length - 3);
-          }
-          cleanedData = cleanedData.trim();
+        // SỬ DỤNG HÀM CLEANJSONSTRING MỚI NHẤT
+        cleanedData = cleanJsonString(rawData);
 
-          const roadmapData = JSON.parse(cleanedData); // Thử phân tích JSON đã làm sạch
+        // Debug: In ra dữ liệu đã làm sạch trước khi parse
+        console.log("Dữ liệu thô nhận được từ API:", rawData);
+        console.log("Dữ liệu đã làm sạch trước khi parse:", cleanedData);
 
-          if (roadmapData && roadmapData.lotrinh && Array.isArray(roadmapData.lotrinh) && roadmapData.lotrinh.length > 0) {
+        // Kiểm tra nếu cleanedData rỗng sau khi làm sạch, có nghĩa là không tìm thấy JSON hợp lệ
+        if (!cleanedData) {
+            throw new Error("Không tìm thấy JSON hợp lệ trong phản hồi từ API.");
+        }
+
+        const roadmapData = JSON.parse(cleanedData); // Thử phân tích JSON đã làm sạch
+
+        if (roadmapData && Array.isArray(roadmapData.lotrinh) && roadmapData.lotrinh.length > 0) {
             const langName = roadmapData.lang || 'Ngôn ngữ lập trình';
             const scoreValue = roadmapData.point || 'Không xác định';
 
             const heading = document.createElement('h2');
+            heading.className = 'roadmap-heading';
             heading.textContent = `Lộ Trình Học Tập ${langName} của bạn (Điểm bài test: ${scoreValue})`;
             resultDiv.appendChild(heading);
 
-            roadmapData.lotrinh.forEach((lesson, index) => {
-              const lessonContainer = document.createElement('div');
-              lessonContainer.className = 'lesson-container';
-              // Thêm sự kiện click để mở modal, truyền cả tiêu đề và nội dung đầy đủ
-              lessonContainer.onclick = () => openLessonModal(lesson[0], lesson[1]);
+            roadmapData.lotrinh.forEach((lesson) => {
+                const lessonContainer = document.createElement('div');
+                lessonContainer.className = 'lesson-container';
+                lessonContainer.tabIndex = 0; // Để có thể focus bằng bàn phím
+                lessonContainer.setAttribute('role', 'button'); // Đánh dấu là một nút có thể click
+                lessonContainer.setAttribute('aria-label', `Xem chi tiết bài học: ${lesson[0]}`);
 
-              const lessonTitle = document.createElement('h3');
-              lessonTitle.textContent = lesson[0];
+                // Thêm sự kiện click để mở modal
+                lessonContainer.onclick = () => openLessonModal(lesson[0], lesson[1]);
+                lessonContainer.onkeydown = (event) => { // Hỗ trợ truy cập bằng bàn phím (Enter/Space)
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault(); // Ngăn hành vi mặc định của phím Space (cuộn trang)
+                        openLessonModal(lesson[0], lesson[1]);
+                    }
+                };
 
-              const lessonContentPreview = document.createElement('p');
-              // Hiển thị một phần nội dung để làm xem trước, không cắt quá ngắn nếu nội dung đã ngắn
-              const previewLength = 200; // Tăng số ký tự xem trước
-              let previewText = lesson[1];
-              if (lesson[1].length > previewLength) {
-                // Cắt ở cuối từ gần nhất để tránh cắt cụt giữa chừng
-                const lastSpaceIndex = lesson[1].lastIndexOf(' ', previewLength);
-                previewText = lesson[1].substring(0, lastSpaceIndex !== -1 ? lastSpaceIndex : previewLength) + '...';
-              }
-              lessonContentPreview.textContent = previewText;
+                const lessonTitle = document.createElement('h3');
+                lessonTitle.className = 'lesson-title';
+                lessonTitle.textContent = lesson[0];
 
-              lessonContainer.appendChild(lessonTitle);
-              lessonContainer.appendChild(lessonContentPreview); // Hiển thị bản xem trước
-              resultDiv.appendChild(lessonContainer);
+                const lessonContentPreview = document.createElement('p');
+                lessonContentPreview.className = 'lesson-preview';
+                const previewLength = 250; // Tăng số ký tự xem trước để nội dung có ý nghĩa hơn
+                let previewText = lesson[1];
+                if (lesson[1].length > previewLength) {
+                    // Cắt ở cuối từ gần nhất để tránh cắt cụt giữa chừng
+                    const lastSpaceIndex = lesson[1].lastIndexOf(' ', previewLength);
+                    previewText = lesson[1].substring(0, lastSpaceIndex !== -1 ? lastSpaceIndex : previewLength) + '...';
+                }
+                lessonContentPreview.textContent = previewText;
+
+                lessonContainer.appendChild(lessonTitle);
+                lessonContainer.appendChild(lessonContentPreview);
+                resultDiv.appendChild(lessonContainer);
             });
-          } else {
-            resultDiv.innerHTML = '<p style="text-align: center; color: #e74c3c; font-weight: bold;">Không có lộ trình học tập nào được tạo hoặc dữ liệu không hợp lệ. Vui lòng thử lại.</p>';
-          }
-        } catch (parseError) {
-          resultDiv.innerHTML = `<p style="text-align: center; color: #e74c3c; font-weight: bold;">Đã xảy ra lỗi khi phân tích dữ liệu nhận được từ máy chủ. Định dạng JSON có thể không đúng. Lỗi: ${parseError.message}</p>
-                                 <p style="color: #666; font-size: 0.9em;">Dữ liệu thô nhận được (để debug): <pre style="background: #f8d7da; padding: 10px; border-radius: 5px; overflow-x: auto;">${escapeHtml(rawData)}</pre></p>`;
-          console.error("Lỗi phân tích cú pháp JSON:", parseError);
-          console.log("Dữ liệu thô nhận được:", rawData); // In ra dữ liệu thô để debug
+        } else {
+            resultDiv.innerHTML = '<p class="error-message">Không có lộ trình học tập nào được tạo hoặc dữ liệu không hợp lệ. Vui lòng thử lại.</p>';
         }
-
-      } catch (err) {
+    } catch (error) {
+        // Ẩn spinner trong trường hợp lỗi
         loadingSpinner.style.display = 'none';
-        resultDiv.innerHTML = `<p style="text-align: center; color: #e74c3c; font-weight: bold;">Đã xảy ra lỗi khi kết nối với máy chủ: ${err.message}. Vui lòng kiểm tra kết nối mạng hoặc liên hệ quản trị viên.</p>`;
-        console.error("Lỗi Fetch API:", err);
-      }
+
+        let errorMessage = `<p class="error-message">Đã xảy ra lỗi: ${error.message}. Vui lòng thử lại.</p>`;
+        if (error instanceof SyntaxError) {
+            // Lỗi phân tích cú pháp JSON
+            errorMessage += `<p class="sub-error-message">Có vẻ như định dạng JSON nhận được không đúng.</p>`;
+            // Hiển thị dữ liệu thô và dữ liệu đã làm sạch để debug
+            errorMessage += `<p class="sub-error-message">Dữ liệu thô từ API: <pre class="raw-data">${escapeHtml(rawData)}</pre></p>`;
+            errorMessage += `<p class="sub-error-message">Dữ liệu đã làm sạch (gây lỗi parse): <pre class="raw-data">${escapeHtml(cleanedData)}</pre></p>`;
+        } else if (error.message.includes('HTTP')) {
+            errorMessage += `<p class="sub-error-message">Kiểm tra kết nối internet hoặc API của bạn.</p>`;
+        }
+        resultDiv.innerHTML = errorMessage;
+        console.error("Lỗi khi tạo lộ trình:", error);
+    }
+}
+
+// Hàm tiện ích để hiển thị HTML an toàn trong <pre> hoặc khi debug
+function escapeHtml(text) {
+    if (typeof text !== 'string') {
+        text = String(text); // Đảm bảo đầu vào là chuỗi
+    }
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+/**
+ * Hàm làm sạch chuỗi JSON.
+ * Cố gắng trích xuất khối JSON hợp lệ nhất từ một chuỗi có thể chứa văn bản thừa.
+ * Nó sẽ tìm kiếm khối JSON bắt đầu bằng '{' hoặc '[' và kết thúc bằng '}' hoặc ']'
+ * và lặp đi lặp lại việc cắt từ cuối chuỗi để tìm một JSON hợp lệ.
+ * @param {string} rawText Chuỗi đầu vào từ API.
+ * @returns {string} Chuỗi JSON đã được làm sạch và hợp lệ, hoặc chuỗi rỗng nếu không tìm thấy JSON hợp lệ.
+ */
+function cleanJsonString(rawText) {
+    // Bước 1: Loại bỏ các backtick bao quanh ```json và ```
+    let processedText = rawText
+        .replace(/^```json\s*/, '')
+        .replace(/\s*```$/, '')
+        .trim();
+
+    // Bước 2: Tìm vị trí của dấu ngoặc mở đầu tiên và dấu ngoặc đóng cuối cùng
+    const firstBrace = processedText.indexOf('{');
+    const firstBracket = processedText.indexOf('[');
+
+    let startIndex = -1;
+    if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
+        startIndex = firstBrace; // Bắt đầu bằng {
+    } else if (firstBracket !== -1) {
+        startIndex = firstBracket; // Bắt đầu bằng [
     }
 
-    // Hàm tiện ích để hiển thị HTML an toàn trong <pre>
-    function escapeHtml(text) {
-      return text
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+    if (startIndex === -1) {
+        console.warn("cleanJsonString: Không tìm thấy dấu ngoặc mở JSON.");
+        return ''; // Không tìm thấy bất kỳ dấu ngoặc mở nào
     }
 
-    // --- Chức năng Modal (Hộp thoại) ---
-    const lessonModal = document.getElementById('lessonModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalContent = document.getElementById('modalContent');
+    // Cắt chuỗi từ dấu ngoặc mở đầu tiên
+    let potentialJson = processedText.substring(startIndex);
 
-    function openLessonModal(title, content) {
-      modalTitle.textContent = title;
-      // *** ĐẢM BẢO NỘI DUNG ĐƯỢC HIỂN THỊ ĐÚNG ĐỊNH DẠNG ***
-      // Nếu nội dung có thể chứa HTML (ví dụ: các thẻ <strong>, <em>, <pre> cho code),
-      // thì dùng innerHTML. Cần cẩn thận với bảo mật (XSS).
-      // Nếu chắc chắn nội dung chỉ là văn bản thuần túy, dùng textContent là an toàn nhất.
-      // Vì bạn muốn nội dung "kỹ lưỡng và chi tiết", có thể nó sẽ bao gồm các ví dụ code,
-      // nên chúng ta sẽ tạm sử dụng innerHTML cho mục đích hiển thị định dạng từ AI.
-      // Cần lưu ý về XSS (Cross-Site Scripting) nếu nội dung từ AI không được kiểm soát chặt.
-      modalContent.innerHTML = content.replace(/\n/g, '<br>'); // Thay thế ngắt dòng bằng <br> để hiển thị đúng
-      // Có thể thêm bước xử lý Markdown nếu AI trả về Markdown
-      // Ví dụ: modalContent.innerHTML = marked.parse(content); (cần thư viện marked.js)
+    // Bước 3: Lặp lại việc cắt từ cuối và thử parse cho đến khi tìm được JSON hợp lệ
+    // Giới hạn số lần thử để tránh vòng lặp vô hạn nếu dữ liệu quá tệ
+    const maxAttempts = 100; // Có thể điều chỉnh
+    for (let i = 0; i < maxAttempts; i++) {
+        try {
+            // Thử parse
+            const parsed = JSON.parse(potentialJson);
+            // Nếu parse thành công, stringify lại để chuẩn hóa và trả về
+            return JSON.stringify(parsed);
+        } catch (e) {
+            // Nếu parse thất bại, có thể là lỗi "Unterminated string"
+            // hoặc ký tự thừa ở cuối. Cắt bớt từ cuối chuỗi.
+            // Cắt từ vị trí cuối cùng của chuỗi, bỏ đi 1 ký tự
+            // Nếu chuỗi quá ngắn, dừng lại
+            if (potentialJson.length <= 1) {
+                console.warn("cleanJsonString: Chuỗi JSON tiềm năng quá ngắn, không thể sửa lỗi.");
+                break;
+            }
 
-      lessonModal.style.display = 'block'; // Hiển thị modal
-      document.body.style.overflow = 'hidden'; // Ngăn cuộn trang chính
+            // Tìm dấu ngoặc đóng cuối cùng để cắt. Ưu tiên cắt bỏ các ký tự không phải JSON
+            const lastChar = potentialJson[potentialJson.length - 1];
+            if (lastChar === '}' || lastChar === ']') {
+                 // Nếu ký tự cuối cùng là dấu đóng, thử cắt đi các khoảng trắng hoặc ký tự không phải JSON
+                potentialJson = potentialJson.slice(0, -1).trim();
+                // Sau khi cắt đi dấu đóng, có thể cần thêm lại nếu nó là dấu đóng hợp lệ
+                // Logic này phức tạp, cách đơn giản hơn là chỉ cắt bớt từng ký tự
+            } else {
+                 potentialJson = potentialJson.slice(0, -1); // Cắt từng ký tự từ cuối
+            }
+        }
     }
 
-    function closeModal() {
-      lessonModal.style.display = 'none'; // Ẩn modal
-      document.body.style.overflow = ''; // Cho phép cuộn trang chính trở lại
-    }
+    console.error("cleanJsonString: Không thể tìm thấy JSON hợp lệ sau nhiều lần thử.");
+    return ''; // Trả về chuỗi rỗng nếu không thể làm sạch thành công
+}
 
-    // Đóng modal khi click ra ngoài nội dung modal
-    window.onclick = function(event) {
-      if (event.target == lessonModal) {
+
+// --- Chức năng Modal (Hộp thoại) ---
+const lessonModal = document.getElementById('lessonModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalContent = document.getElementById('modalContent');
+const closeModalBtn = document.querySelector('.close-button'); // Lấy nút đóng modal
+
+function openLessonModal(title, content) {
+    modalTitle.textContent = title;
+    // Sử dụng innerHTML vì nội dung từ AI có thể chứa định dạng như <pre> hoặc các thẻ khác.
+    // **LƯU Ý BẢO MẬT**: Nếu nguồn nội dung không đáng tin cậy, bạn cần làm sạch hoặc
+    // sử dụng thư viện Markdown parser để đảm bảo an toàn XSS.
+    // Hiện tại, chúng ta thay thế ngắt dòng bằng <br> để hiển thị đúng.
+    modalContent.innerHTML = content.replace(/\n/g, '<br>');
+
+    lessonModal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Ngăn cuộn trang chính
+    modalTitle.focus(); // Tập trung vào tiêu đề modal để cải thiện trải nghiệm người dùng
+}
+
+function closeModal() {
+    lessonModal.style.display = 'none';
+    document.body.style.overflow = ''; // Cho phép cuộn trang chính trở lại
+}
+
+// Đóng modal khi click vào nút đóng
+if (closeModalBtn) {
+    closeModalBtn.onclick = closeModal;
+}
+
+// Đóng modal khi click ra ngoài nội dung modal
+window.onclick = function(event) {
+    if (event.target === lessonModal) {
         closeModal();
-      }
     }
+};
+
+// Đóng modal bằng phím Escape
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && lessonModal.style.display === 'block') {
+        closeModal();
+    }
+});
   </script>
 </body>
 </html>

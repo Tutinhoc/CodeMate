@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #556b2f, #a8d5a3);
+    background: linear-gradient(135deg, #3f478d, #9cb1eb);
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -45,11 +45,11 @@ body {
   
   .login-container input:focus {
     outline: none;
-    box-shadow: 0 0 5px #a8d5a3;
+    box-shadow: 0 0 5px #a3a4d5;
   }
   
   .login-container button {
-    background-color: #a8d5a3;
+    background-color: #a3acd5;
     border: none;
     color: #2c3e20;
     font-weight: 700;
@@ -60,7 +60,7 @@ body {
   }
   
   .login-container button:hover {
-    background-color: #7a9b6e;
+    background-color: #6e769b;
   }
   
   .redirect {

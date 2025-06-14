@@ -219,8 +219,27 @@
         const sel = document.querySelector(`input[name="q${i}"]:checked`);
         return `Câu ${i + 1}: ${q.question}\nNgười học chọn: ${sel ? sel.value : "Không chọn"}\nĐáp án đúng: ${q.answer}\n`;
       }).join("\n");
+      
+      const prompt1 = `Dưới đây là các câu hỏi lập trình và câu trả lời của học viên. Hãy chấm điểm trên thang điểm 100:\n\n${content}\n\n (chỉ đưa ra số điểm và không nói gì thêm)`;
+      const url1 = `https://code.techmax.site/system/getai.php?prombt=${encodeURIComponent(prompt1)}`;
 
-      const prompt = `Dưới đây là các câu hỏi lập trình và câu trả lời của học viên. Hãy chấm điểm và đưa nhận xét:\n\n${content}\nSau đó đưa ra lộ trình học phù hợp, nói như đang nói chuyện với học viên, không nói chuyện với nhà phát triển.`;
+      document.getElementById("submitBtn").disabled = true;
+      document.getElementById("result").innerText = "Đang chấm điểm...";
+
+      try {
+        const res = await fetch(url1, { method: 'GET', mode: 'cors' });
+        if (!res.ok) throw new Error(`HTTP lỗi: ${res.status}`);
+        const result = await res.text();
+        let score = result;
+        localStorage.setItem("quizScore", score);
+        
+      } catch (err) {
+        document.getElementById("result").innerText = "Lỗi khi chấm điểm: " + err.message;
+      } finally {
+        document.getElementById("submitBtn").disabled = false;
+      }
+
+      const prompt = `Dưới đây là các câu hỏi lập trình và câu trả lời của học viên. Hãy đưa nhận xét:\n\n${content}\nSau đó đưa ra lộ trình học phù hợp, nói như đang nói chuyện với học viên, không nói chuyện với nhà phát triển.`;
       const url = `https://code.techmax.site/system/getai.php?prombt=${encodeURIComponent(prompt)}`;
 
       document.getElementById("submitBtn").disabled = true;
@@ -244,7 +263,7 @@
     }
 
     function goToLessons() {
-      alert("Tính năng chuyển sang bài học sẽ được triển khai sau!");
+       location.href ="../html/lessons.html";
     }
   </script>
 </body>
