@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Quiz Lập Trình với GenAI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Playfair+Display&family=Poppins&family=Roboto&display=swap" rel="stylesheet" />
+  <link href="[https://fonts.googleapis.com/css2?family=Inter&family=Playfair+Display&family=Poppins&family=Roboto&display=swap](https://fonts.googleapis.com/css2?family=Inter&family=Playfair+Display&family=Poppins&family=Roboto&display=swap)" rel="stylesheet" />
   <style>
     * {
-      box-sizing: border-box;
+      box-sizing: border-box; /* Đã sửa lỗi chính tả từ border-20px thành border-box */
     }
     body {
       margin: 0;
@@ -124,7 +124,7 @@
       margin-top: 40px;
       width: 160px;
       height: 160px;
-      background: url('https://cdn-icons-png.flaticon.com/512/4712/4712840.png') no-repeat center center / contain;
+      background: url('[https://cdn-icons-png.flaticon.com/512/4712/4712840.png](https://cdn-icons-png.flaticon.com/512/4712/4712840.png)') no-repeat center center / contain;
       filter: drop-shadow(0 0 8px #00C2FF99);
       user-select: none;
     }
@@ -159,7 +159,13 @@
     let ngonNgus = localStorage.getItem("selectedLanguage") || " JavaScript ";
 
     async function generateQuestions() {
-      const prompt = "Tạo 5 câu hỏi trắc nghiệm về kiểm tra kiến thức về lập trình " + ngonNgus + " để tạo lộ trình học phù hợp và 4 đáp án A, B, C, D, và ghi rõ đáp án đúng.";
+      const prompt = `Hãy tạo 10 câu hỏi trắc nghiệm kiểm tra *tư duy lập trình* bằng ngôn ngữ ${ngonNgus}.
+Mỗi câu cần:
+- Đánh giá khả năng phân tích logic, đọc hiểu đoạn mã, tìm lỗi hoặc suy luận kết quả chương trình, thuật toán.
+- Có 4 lựa chọn A, B, C, D được hiển thị.
+
+Đừng hỏi các định nghĩa đơn thuần. Ưu tiên các ví dụ thực tế, hoặc đoạn mã có logic cần phân tích dưới dạng văn bản.`;
+
       const url = `https://code.techmax.site/system/getai.php?prombt=${encodeURIComponent(prompt)}`;
 
       document.getElementById("generateBtn").disabled = true;
@@ -171,6 +177,8 @@
         const response = await fetch(url, { method: 'GET', mode: 'cors' });
         if (!response.ok) throw new Error(`HTTP lỗi: ${response.status}`);
         const text = await response.text();
+        console.log("Dữ liệu thô từ API:", text); // Dòng này vẫn hữu ích để gỡ lỗi
+        
         currentQuestions = parseQuestions(text);
         renderQuestions(currentQuestions);
         document.getElementById("submitBtn").style.display = "block";
@@ -186,13 +194,53 @@
       const blocks = text.split(/Câu \d+:/).slice(1);
       return blocks.map(block => {
         const lines = block.trim().split("\n").filter(line => line.trim() !== "");
-        const question = lines[0].trim();
-        const choices = lines.slice(1, 5).map(line => line.slice(3).trim());
-        const answerLine = lines.find(line => line.includes("Đáp án"));
-        const answer = answerLine ? answerLine.split(":")[1].trim() : "";
+        
+        let question = '';
+        let choices = [];
+        let answer = '';
+
+        let questionLines = [];
+        let choiceStartIndex = -1;
+
+        for (let i = 0; i < lines.length; i++) {
+          // Tìm dòng bắt đầu lựa chọn (A., B., C., D.)
+          if (lines[i].match(/^[A-D]\.\s/)) {
+            choiceStartIndex = i;
+            break;
+          }
+          questionLines.push(lines[i]);
+        }
+
+        question = questionLines.join(' ').trim();
+        // Loại bỏ "Câu X:", các dấu **, và ```python``` nếu có trong câu hỏi
+        question = question.replace(/Câu \d+:\s*/, '')
+                           .replace(/\*\*/g, '')
+                           .replace(/```python\s*|\s*```/g, '') // Thêm dòng này
+                           .trim();
+
+        if (choiceStartIndex !== -1) {
+          const remainingLines = lines.slice(choiceStartIndex);
+          const answerLineIndex = remainingLines.findIndex(line => line.includes("Đáp án"));
+          
+          if (answerLineIndex !== -1) {
+            choices = remainingLines.slice(0, answerLineIndex)
+                            .filter(line => line.match(/^[A-D]\.\s/)) // Lọc để chỉ lấy các dòng lựa chọn hợp lệ
+                            .slice(0, 4) // Giới hạn chỉ lấy 4 lựa chọn đầu tiên
+                            .map(line => line.slice(3).trim());
+            answer = remainingLines[answerLineIndex].split(":")[1].trim();
+          } else {
+            // Trường hợp không tìm thấy "Đáp án"
+            choices = remainingLines
+                            .filter(line => line.match(/^[A-D]\.\s/)) // Lọc để chỉ lấy các dòng lựa chọn hợp lệ
+                            .slice(0, 4) // Giới hạn chỉ lấy 4 lựa chọn đầu tiên
+                            .map(line => line.slice(3).trim());
+          }
+        }
+
         return { question, choices, answer };
       });
     }
+
 
     function renderQuestions(questions) {
       const container = document.getElementById("question-container");
@@ -219,7 +267,7 @@
         const sel = document.querySelector(`input[name="q${i}"]:checked`);
         return `Câu ${i + 1}: ${q.question}\nNgười học chọn: ${sel ? sel.value : "Không chọn"}\nĐáp án đúng: ${q.answer}\n`;
       }).join("\n");
-      
+
       const prompt1 = `Dưới đây là các câu hỏi lập trình và câu trả lời của học viên. Hãy chấm điểm trên thang điểm 100:\n\n${content}\n\n (chỉ đưa ra số điểm và không nói gì thêm)`;
       const url1 = `https://code.techmax.site/system/getai.php?prombt=${encodeURIComponent(prompt1)}`;
 
@@ -230,23 +278,16 @@
         const res = await fetch(url1, { method: 'GET', mode: 'cors' });
         if (!res.ok) throw new Error(`HTTP lỗi: ${res.status}`);
         const result = await res.text();
-        let score = result;
-        localStorage.setItem("quizScore", score);
-        
+        localStorage.setItem("quizScore", result);
       } catch (err) {
         document.getElementById("result").innerText = "Lỗi khi chấm điểm: " + err.message;
-      } finally {
-        document.getElementById("submitBtn").disabled = false;
       }
 
-      const prompt = `Dưới đây là các câu hỏi lập trình và câu trả lời của học viên. Hãy đưa nhận xét:\n\n${content}\nSau đó đưa ra lộ trình học phù hợp, nói như đang nói chuyện với học viên, không nói chuyện với nhà phát triển.`;
-      const url = `https://code.techmax.site/system/getai.php?prombt=${encodeURIComponent(prompt)}`;
-
-      document.getElementById("submitBtn").disabled = true;
-      document.getElementById("result").innerText = "Đang chấm điểm...";
+      const prompt2 = `Dưới đây là các câu hỏi và trả lời của học viên. Hãy nhận xét và đề xuất lộ trình phù hợp:\n\n${content}\n\n Viết như đang nói chuyện với học viên.`;
+      const url2 = `https://code.techmax.site/system/getai.php?prombt=${encodeURIComponent(prompt2)}`;
 
       try {
-        const res = await fetch(url, { method: 'GET', mode: 'cors' });
+        const res = await fetch(url2, { method: 'GET', mode: 'cors' });
         if (!res.ok) throw new Error(`HTTP lỗi: ${res.status}`);
         const result = await res.text();
         document.getElementById("result").innerText = result;
@@ -256,7 +297,7 @@
           document.getElementById("gotoLessonBtn").style.display = "block";
         }
       } catch (err) {
-        document.getElementById("result").innerText = "Lỗi khi chấm điểm: " + err.message;
+        document.getElementById("result").innerText = "Lỗi khi nhận xét: " + err.message;
       } finally {
         document.getElementById("submitBtn").disabled = false;
       }

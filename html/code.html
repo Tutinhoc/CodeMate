@@ -197,6 +197,34 @@
             font-size: 0.85em;
             margin-top: 10px;
         }
+        .fixed-button {
+  position: fixed;
+  bottom: 20px;
+  padding: 10px 18px;
+  font-size: 16px;
+  border-radius: 8px;
+  background-color: #2c3e50;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  z-index: 9999;
+}
+
+.fixed-button:hover {
+  background-color: #1a5276;
+  transform: translateY(-2px);
+}
+
+/* Vị trí riêng cho từng nút */
+.left-button {
+  left: 20px;
+}
+
+.right-button {
+  right: 20px;
+}
+
     </style>
 </head>
 <body>
@@ -216,6 +244,7 @@
         <label for="language">💻 Ngôn ngữ lập trình:</label>
         <select id="language">
             <option value="python">Python</option>
+            <option value="JavaScript">JavaScript</option>
             <option value="cpp">C++</option>
             <option value="java">Java</option>
         </select>
@@ -229,6 +258,7 @@
             ⏳ Chưa có kết quả...
         </div>
     </div>
+    <a href="/index.html" class="fixed-button left-button">🏠 Trang chủ</a>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
@@ -270,7 +300,7 @@ input và output mẫu lần lượt là ${JSON.stringify(sampleInput)} và ${JS
 ngôn ngữ lập trình là ${language}.
 chạy bằng đoạn code của tôi ${JSON.stringify(userCode)}.
 
-kết quả trả về phải bao gồm các phần sau, định dạng theo Markdown, đừng dùng table nhé, hãy liệt kê từng test cho dễ nhìn:
+kết quả trả về phải bao gồm các phần sau, định dạng theo Markdown, đừng dùng table nhé, hãy liệt kê từng test cho dễ nhìn ( test nào sai sẽ có đánh dấu riêng):
 - input 1
 - output 1
 - thời gian chạy 1 ( chỉ viết thời gian đơn thuần)
@@ -279,8 +309,8 @@ kết quả trả về phải bao gồm các phần sau, định dạng theo Mar
 - output 20
 - thời gian chạy 20 ( chỉ viết thời gian đơn thuần)
 
-- số điểm của tất cả các test trên thang điểm 20 (ví dụ: 15/20)
-- nhận xét, hướng dẫn giải, thuật toán cho bài toán (có thể có ví dụ code nếu cần).
+- số điểm test mà code chạy ra kết quả output đúng của các test trên thang điểm 20 (ví dụ: 15/20)
+- nhận xét, hướng dẫn giải, thuật toán cho bài toán.
 
 Hãy đảm bảo phản hồi của bạn hoàn toàn ở định dạng Markdown, không có bất kỳ ký tự nào khác bên ngoài định dạng Markdown.
 trả kết quả về dạng string đừng ghi dưới dạng code`;

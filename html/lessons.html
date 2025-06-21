@@ -4,256 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lộ Trình Học Tập Ngôn Ngữ Lập Trình Chuyên Nghiệp</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #ece9e6, #ffffff); /* Nền gradient nhẹ nhàng */
-      padding: 20px;
-      color: #333;
-      line-height: 1.6;
-    }
-    #container {
-      max-width: 800px; /* Tăng chiều rộng tối đa */
-      margin: 30px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Đổ bóng mềm mại hơn */
-      border: 1px solid #e0e0e0;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #2c3e50;
-      font-size: 2.2em;
-    }
-    p strong {
-      color: #2980b9; /* Màu xanh đậm cho chữ "Điểm bài test" */
-    }
-    label {
-      display: block;
-      margin-top: 20px;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #34495e;
-    }
-    select, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      font-size: 17px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box; /* Đảm bảo padding không làm tăng chiều rộng */
-    }
-    select {
-      background-color: #f8f8f8;
-      cursor: pointer;
-    }
-    button {
-      background-color: #28a745; /* Màu xanh lá cây nổi bật */
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng chuyển động */
-      font-weight: bold;
-      letter-spacing: 0.5px;
-    }
-    button:hover {
-      background-color: #218838; /* Màu xanh đậm hơn khi hover */
-      transform: translateY(-2px); /* Hiệu ứng nhấc nhẹ */
-    }
-    button:active {
-      transform: translateY(0); /* Trở lại vị trí ban đầu khi click */
-    }
-    #result {
-      white-space: pre-wrap; /* Giữ nguyên định dạng văn bản */
-      word-wrap: break-word; /* Ngắt từ nếu quá dài */
-      background: #fdfdfd;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 30px;
-      max-height: 600px; /* Tăng chiều cao tối đa */
-      overflow-y: auto; /* Cuộn khi nội dung tràn */
-      border: 1px solid #eee;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Đổ bóng inset nhẹ */
-      font-size: 0.95em;
-      color: #444;
-    }
-    #result h2 {
-      text-align: center;
-      color: #1a5276;
-      margin-bottom: 25px;
-      font-size: 1.8em;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 10px;
-    }
-    .lesson-container {
-      margin-bottom: 25px;
-      padding: 18px;
-      border: 1px solid #dcdcdc;
-      border-left: 5px solid #28a745; /* Đường viền bên trái nổi bật */
-      border-radius: 8px;
-      background-color: #ffffff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-      cursor: pointer; /* Biểu tượng con trỏ để người dùng biết có thể nhấp */
-    }
-    .lesson-container:hover {
-      transform: translateY(-3px); /* Hiệu ứng nhấc nhẹ khi hover */
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-    .lesson-container h3 {
-      color: #007bff; /* Màu xanh dương cho tiêu đề bài học */
-      margin-top: 0;
-      margin-bottom: 10px;
-      font-size: 1.3em;
-      border-bottom: 1px dashed #e9ecef;
-      padding-bottom: 8px;
-    }
-    .lesson-container p {
-      text-align: justify;
-      color: #555;
-    }
-    .loading-spinner {
-      display: none; /* Mặc định ẩn */
-      text-align: center;
-      margin-top: 20px;
-      color: #555;
-    }
-    .loading-spinner::after {
-      content: '';
-      display: block;
-      width: 40px;
-      height: 40px;
-      margin: 10px auto;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #3498db;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+<link rel="stylesheet" href="../css/lessons.css">
 
-    /* --- Styles cho Modal (Hộp thoại) --- */
-    .modal {
-      display: none; /* Ẩn theo mặc định */
-      position: fixed; /* Giữ nguyên vị trí khi cuộn */
-      z-index: 1000; /* Luôn hiển thị trên cùng */
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto; /* Cho phép cuộn nếu nội dung dài */
-      background-color: rgba(0,0,0,0.6); /* Nền mờ */
-      backdrop-filter: blur(5px); /* Hiệu ứng làm mờ nền phía sau */
-      -webkit-backdrop-filter: blur(5px); /* Hỗ trợ Safari */
-      padding-top: 60px;
-    }
-
-    .modal-content {
-      background-color: #fefefe;
-      margin: 5% auto; /* 5% từ trên xuống và căn giữa */
-      padding: 30px;
-      border: 1px solid #888;
-      width: 90%; /* Chiều rộng tương đối */
-      max-width: 800px; /* Tăng chiều rộng tối đa cho modal */
-      border-radius: 10px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3); /* Đổ bóng mạnh hơn */
-      position: relative; /* Để vị trí nút đóng */
-      animation: fadeIn 0.3s ease-out; /* Hiệu ứng mở modal */
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .close-button {
-      color: #aaa;
-      position: absolute;
-      top: 15px;
-      right: 25px;
-      font-size: 35px;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .close-button:hover,
-    .close-button:focus {
-      color: #333;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    #modalTitle {
-      color: #2c3e50;
-      font-size: 1.8em;
-      margin-bottom: 15px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
-    }
-
-    #modalContent {
-      font-size: 1.1em;
-      color: #444;
-      text-align: justify;
-      max-height: 70vh; /* Giới hạn chiều cao và cho phép cuộn */
-      overflow-y: auto;
-      padding-right: 10px; /* Đảm bảo không bị che bởi thanh cuộn */
-      white-space: pre-wrap; /* Giữ nguyên các ngắt dòng và khoảng trắng */
-      word-wrap: break-word; /* Ngắt từ nếu quá dài */
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        #container {
-            padding: 20px;
-            margin: 20px auto;
-        }
-        h1 {
-            font-size: 1.8em;
-        }
-        .modal-content {
-            width: 95%;
-            margin: 10% auto;
-            padding: 20px;
-        }
-    }
-    @media (max-width: 480px) {
-        body {
-            padding: 10px;
-        }
-        #container {
-            padding: 15px;
-            margin: 15px auto;
-        }
-        h1 {
-            font-size: 1.5em;
-        }
-        select, button {
-            padding: 10px;
-            font-size: 16px;
-        }
-        .modal-content {
-            margin: 5% auto;
-            padding: 15px;
-        }
-        .close-button {
-            font-size: 30px;
-            top: 10px;
-            right: 15px;
-        }
-        #modalTitle {
-            font-size: 1.5em;
-        }
-        #modalContent {
-            font-size: 1em;
-        }
-    }
-  </style>
 </head>
 <body>
   <div id="container">
@@ -261,15 +13,25 @@
 
     <p><strong>Điểm bài test đầu vào của bạn:</strong> <span id="scoreDisplay">Đang tải...</span></p>
 
+    <label for="languageSelect">Chọn Ngôn Ngữ Lập Trình:</label>
+    <select id="languageSelect" onchange="updateSelectedLanguage()">
+      <option value="">-- Chọn ngôn ngữ --</option>
+      <option value="Python">Python</option>
+      <option value="JavaScript">JavaScript</option>
+      <option value="C++">C++</option>
+      <option value="Java">Java</option>
+      <option value="Go">Go</option>
+      <option value="Ruby">Ruby</option>
+    </select>
 
-    <button onclick="generatePrompt()">Tạo Lộ Trình Học Tập</button>
+    <button onclick="generateOrLoadRoadmap()">Tạo / Tải Lộ Trình Học Tập</button>
 
     <div class="loading-spinner" id="loadingSpinner">
       Đang tạo lộ trình...
     </div>
 
     <div id="result">
-      <p style="text-align: center; color: #777;">Lộ trình học tập sẽ hiển thị ở đây sau khi bạn chọn ngôn ngữ và nhấp vào nút "Tạo Lộ Trình".</p>
+      <p style="text-align: center; color: #777;">Lộ trình học tập sẽ hiển thị ở đây sau khi bạn chọn ngôn ngữ và nhấp vào nút "Tạo / Tải Lộ Trình Học Tập".</p>
     </div>
   </div>
 
@@ -280,24 +42,83 @@
       <div id="modalContent"></div>
     </div>
   </div>
+<!-- Nút điều hướng -->
+<a href="/index.html" class="fixed-button left-button">🏠 Trang chủ</a>
+<a href="code.html" class="fixed-button right-button">💻 Trang Code</a>
 
   <script>
+// Biến lưu trữ lộ trình đã tải
+let currentRoadmap = null;
+
 // Hiển thị điểm lúc đầu tải trang
 document.addEventListener('DOMContentLoaded', () => {
     const initialScore = localStorage.getItem('quizScore');
     document.getElementById('scoreDisplay').textContent = initialScore ? `${initialScore} điểm` : 'Chưa có điểm';
+
+    // Khôi phục ngôn ngữ đã chọn từ localStorage (nếu có)
+    const savedLanguage = localStorage.getItem('selectedLanguage');
+    if (savedLanguage) {
+        document.getElementById('languageSelect').value = savedLanguage;
+        // Tải lộ trình nếu có sẵn cho ngôn ngữ đã chọn
+        loadRoadmapFromLocalStorage(savedLanguage);
+    }
 });
+
+function updateSelectedLanguage() {
+    const lang = document.getElementById('languageSelect').value;
+    localStorage.setItem('selectedLanguage', lang);
+    // Khi thay đổi ngôn ngữ, thử tải lộ trình đã lưu cho ngôn ngữ đó
+    loadRoadmapFromLocalStorage(lang);
+}
+
+function loadRoadmapFromLocalStorage(language) {
+    const resultDiv = document.getElementById('result');
+    const storedRoadmap = localStorage.getItem(`roadmap_${language}`);
+    if (storedRoadmap) {
+        try {
+            const roadmapData = JSON.parse(storedRoadmap);
+            currentRoadmap = roadmapData; // Lưu vào biến toàn cục
+            displayRoadmap(roadmapData);
+            console.log(`Đã tải lộ trình ${language} từ localStorage.`);
+            return true;
+        } catch (e) {
+            console.error(`Lỗi khi parse lộ trình ${language} từ localStorage:`, e);
+            resultDiv.innerHTML = `<p class="error-message">Lỗi khi tải lộ trình đã lưu cho ${language}. Vui lòng thử tạo lại.</p>`;
+            return false;
+        }
+    } else {
+        resultDiv.innerHTML = `<p style="text-align: center; color: #777;">Chưa có lộ trình nào được lưu cho ngôn ngữ ${language}. Nhấn "Tạo / Tải Lộ Trình Học Tập" để tạo mới.</p>`;
+        currentRoadmap = null;
+        return false;
+    }
+}
+
+async function generateOrLoadRoadmap() {
+    const lang = document.getElementById('languageSelect').value;
+    if (!lang) {
+        alert("Vui lòng chọn một ngôn ngữ lập trình!");
+        return;
+    }
+
+    // Nếu có lộ trình đã lưu cho ngôn ngữ này, hiển thị nó
+    if (loadRoadmapFromLocalStorage(lang)) {
+        return;
+    }
+
+    // Nếu không có, thì tạo mới
+    await generatePrompt();
+}
 
 async function generatePrompt() {
     const score = localStorage.getItem('quizScore');
     if (!score) {
-        alert("Không tìm thấy điểm bài test trong localStorage. Vui lòng đảm bảo bạn đã làm bài kiểm tra trước.");
+        alert("Không tìm thấy điểm bài test đầu vào. Vui lòng hoàn thành bài kiểm tra trước.");
         return;
     }
 
-    const lang = localStorage.getItem("selectedLanguage"); // Lấy ngôn ngữ từ localStorage
+    const lang = document.getElementById('languageSelect').value;
     if (!lang) {
-        alert("Không tìm thấy ngôn ngữ đã chọn. Vui lòng chọn ngôn ngữ trước.");
+        alert("Vui lòng chọn một ngôn ngữ lập trình để tạo lộ trình.");
         return;
     }
 
@@ -315,11 +136,11 @@ Kết quả trả về phải là 1 lộ trình học tập ngôn ngữ lập tr
   "point": "${score}",
   "lang": "${lang}",
   "lotrinh": [
-    ["Bài 1: Tên nội dung chi tiết", "Ghi CỰC KỲ CHI TIẾT và ĐẦY ĐỦ về nội dung đó. Hãy chia nhỏ các định nghĩa, quy tắc, cú pháp, đưa ra ví dụ code minh họa, và giải thích rõ ràng từng phần. Đảm bảo nội dung bài học ĐỦ DÀI và ĐẦY ĐỦ kiến thức cần thiết để người học hiểu sâu. Mỗi bài học phải có độ dài tối thiểu 5-7 đoạn văn hoặc tương đương 300-500 từ. Tổng số bài học phải trên 20 bài."],
-    // ... (Thêm các bài học tiếp theo, mỗi bài đều cực kỳ chi tiết)
+    ["Bài 1: Tên nội dung chi tiết", "Đưa ra những kiến thức, bài tập kinh điển về đơn vị bài học đó. Hãy chia nhỏ các định nghĩa, quy tắc, cú pháp, đưa ra ví dụ minh họa, và giải thích rõ ràng từng phần. Đảm bảo nội dung bài học ĐỦ DÀI và ĐẦY ĐỦ kiến thức cần thiết để người học hiểu sâu. Mỗi bài học phải thật chi tiết và đủ lượng bài tập cần thiết cho người học có thể nắm bắt được toàn bộ nội dung bài học. Tổng số bài học phải trên 20 bài."],
+    // ... (Thêm các bài học tiếp theo, mỗi bài đều bắt buộc phải bao gồm bài tập, và được chia bố cục rõ ràng, dễ nhìn)
   ]
 }
-Hãy đảm bảo rằng phản hồi chỉ bao gồm duy nhất khối JSON, không có bất kỳ văn bản, dấu backtick, hoặc giải thích nào khác bên ngoài JSON.`;
+Hãy đảm bảo rằng phản hồi chỉ bao gồm duy nhất khối JSON, không có bất kỳ văn bản, dấu backtick, hoặc giải thích nào khác bên ngoài JSON, nội dung bài học phải được trình bày một cách khoa học dễ nhìn, đủ bài tập cần thiết ở phía sau và không chứa những kí tự không liên quan.`;
 
     const encodedPrompt = encodeURIComponent(prompt);
     const url = `https://code.techmax.site/system/getai.php?prombt=${encodedPrompt}`;
@@ -352,49 +173,10 @@ Hãy đảm bảo rằng phản hồi chỉ bao gồm duy nhất khối JSON, kh
         const roadmapData = JSON.parse(cleanedData); // Thử phân tích JSON đã làm sạch
 
         if (roadmapData && Array.isArray(roadmapData.lotrinh) && roadmapData.lotrinh.length > 0) {
-            const langName = roadmapData.lang || 'Ngôn ngữ lập trình';
-            const scoreValue = roadmapData.point || 'Không xác định';
-
-            const heading = document.createElement('h2');
-            heading.className = 'roadmap-heading';
-            heading.textContent = `Lộ Trình Học Tập ${langName} của bạn (Điểm bài test: ${scoreValue})`;
-            resultDiv.appendChild(heading);
-
-            roadmapData.lotrinh.forEach((lesson) => {
-                const lessonContainer = document.createElement('div');
-                lessonContainer.className = 'lesson-container';
-                lessonContainer.tabIndex = 0; // Để có thể focus bằng bàn phím
-                lessonContainer.setAttribute('role', 'button'); // Đánh dấu là một nút có thể click
-                lessonContainer.setAttribute('aria-label', `Xem chi tiết bài học: ${lesson[0]}`);
-
-                // Thêm sự kiện click để mở modal
-                lessonContainer.onclick = () => openLessonModal(lesson[0], lesson[1]);
-                lessonContainer.onkeydown = (event) => { // Hỗ trợ truy cập bằng bàn phím (Enter/Space)
-                    if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault(); // Ngăn hành vi mặc định của phím Space (cuộn trang)
-                        openLessonModal(lesson[0], lesson[1]);
-                    }
-                };
-
-                const lessonTitle = document.createElement('h3');
-                lessonTitle.className = 'lesson-title';
-                lessonTitle.textContent = lesson[0];
-
-                const lessonContentPreview = document.createElement('p');
-                lessonContentPreview.className = 'lesson-preview';
-                const previewLength = 250; // Tăng số ký tự xem trước để nội dung có ý nghĩa hơn
-                let previewText = lesson[1];
-                if (lesson[1].length > previewLength) {
-                    // Cắt ở cuối từ gần nhất để tránh cắt cụt giữa chừng
-                    const lastSpaceIndex = lesson[1].lastIndexOf(' ', previewLength);
-                    previewText = lesson[1].substring(0, lastSpaceIndex !== -1 ? lastSpaceIndex : previewLength) + '...';
-                }
-                lessonContentPreview.textContent = previewText;
-
-                lessonContainer.appendChild(lessonTitle);
-                lessonContainer.appendChild(lessonContentPreview);
-                resultDiv.appendChild(lessonContainer);
-            });
+            currentRoadmap = roadmapData; // Lưu vào biến toàn cục
+            // Lưu lộ trình vào localStorage với khóa riêng cho từng ngôn ngữ
+            localStorage.setItem(`roadmap_${lang}`, JSON.stringify(roadmapData));
+            displayRoadmap(roadmapData);
         } else {
             resultDiv.innerHTML = '<p class="error-message">Không có lộ trình học tập nào được tạo hoặc dữ liệu không hợp lệ. Vui lòng thử lại.</p>';
         }
@@ -415,6 +197,55 @@ Hãy đảm bảo rằng phản hồi chỉ bao gồm duy nhất khối JSON, kh
         resultDiv.innerHTML = errorMessage;
         console.error("Lỗi khi tạo lộ trình:", error);
     }
+}
+
+function displayRoadmap(roadmapData) {
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = ''; // Xóa nội dung cũ
+
+    const langName = roadmapData.lang || 'Ngôn ngữ lập trình';
+    const scoreValue = roadmapData.point || 'Không xác định';
+
+    const heading = document.createElement('h2');
+    heading.className = 'roadmap-heading';
+    heading.textContent = `Lộ Trình Học Tập ${langName} của bạn`;
+    resultDiv.appendChild(heading);
+
+    roadmapData.lotrinh.forEach((lesson) => {
+        const lessonContainer = document.createElement('div');
+        lessonContainer.className = 'lesson-container';
+        lessonContainer.tabIndex = 0; // Để có thể focus bằng bàn phím
+        lessonContainer.setAttribute('role', 'button'); // Đánh dấu là một nút có thể click
+        lessonContainer.setAttribute('aria-label', `Xem chi tiết bài học: ${lesson[0]}`);
+
+        // Thêm sự kiện click để mở modal
+        lessonContainer.onclick = () => openLessonModal(lesson[0], lesson[1]);
+        lessonContainer.onkeydown = (event) => { // Hỗ trợ truy cập bằng bàn phím (Enter/Space)
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault(); // Ngăn hành vi mặc định của phím Space (cuộn trang)
+                openLessonModal(lesson[0], lesson[1]);
+            }
+        };
+
+        const lessonTitle = document.createElement('h3');
+        lessonTitle.className = 'lesson-title';
+        lessonTitle.textContent = lesson[0];
+
+        const lessonContentPreview = document.createElement('p');
+        lessonContentPreview.className = 'lesson-preview';
+        const previewLength = 250; // Tăng số ký tự xem trước để nội dung có ý nghĩa hơn
+        let previewText = lesson[1];
+        if (lesson[1].length > previewLength) {
+            // Cắt ở cuối từ gần nhất để tránh cắt cụt giữa chừng
+            const lastSpaceIndex = lesson[1].lastIndexOf(' ', previewLength);
+            previewText = lesson[1].substring(0, lastSpaceIndex !== -1 ? lastSpaceIndex : previewLength) + '...';
+        }
+        lessonContentPreview.textContent = previewText;
+
+        lessonContainer.appendChild(lessonTitle);
+        lessonContainer.appendChild(lessonContentPreview);
+        resultDiv.appendChild(lessonContainer);
+    });
 }
 
 // Hàm tiện ích để hiển thị HTML an toàn trong <pre> hoặc khi debug
